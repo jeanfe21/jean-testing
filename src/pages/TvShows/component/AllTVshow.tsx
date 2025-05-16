@@ -3,7 +3,7 @@ import Container from "../../../components/root/Container";
 import type { GetTvShowsResponse } from "../../../interface/tvshows/GetTvShowsResponse";
 import GetData from "../../../@core/hook/FetchingData";
 import Loading from "../../../components/root/Loading";
-import MovieCard from "../../../components/movie/MovieCard";
+import TvShowCard from "./TvShowCard";
 
 const AllTvShows = () => {
   const { data: movieData } = GetData<GetTvShowsResponse>(
@@ -30,8 +30,8 @@ const AllTvShows = () => {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {movieData.results.map((item, index) => (
-          <MovieCard
-            route={`/tvShows/${item.id}`}
+          <TvShowCard
+            id={`${item.id}`}
             key={index}
             description={item.overview}
             duration={"1h 44m"}
