@@ -2,7 +2,7 @@ import Container from "../../../components/root/Container";
 
 import { checkNew } from "../../../@core/utils/checkNew";
 import type { GetTvShowsResponse } from "../../../interface/tvshows/GetTvShowsResponse";
-import { ContentCard } from "../../home/component/ContentCard";
+import { ContentCard } from "./ContentCard";
 
 const TopRated = ({ movieData }: { movieData: GetTvShowsResponse }) => {
   return (
