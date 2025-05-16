@@ -22,7 +22,7 @@ import { useEffect } from "react";
 
 export default function TvShowDetailPage({ id }: { id: string }) {
   const { data: detailMovie, isLoading } = GetData<GetDetailMovieResponse>(
-    `/tvshow/${id}?language=en-US`,
+    `/tv/${id}?language=en-US`,
     ["getdetailTvShow", id]
   );
 

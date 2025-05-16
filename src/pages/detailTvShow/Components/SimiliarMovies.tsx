@@ -1,13 +1,13 @@
 import GetData from "../../../@core/hook/FetchingData";
 import { checkNew } from "../../../@core/utils/checkNew";
 import Container from "../../../components/root/Container";
-import type { GetSimiliarMovieResponse } from "../../../interface/movie/GetSimiliarMovies";
+import type { GetTvShowsResponse } from "../../../interface/tvshows/GetTvShowsResponse";
 import { ContentCard } from "../../home/component/ContentCard";
 
-const SimiliarMovies = ({ id }: { id: string }) => {
-  const { data: similarMovies } = GetData<GetSimiliarMovieResponse>(
-    `movie/${id}/similar?language=en-US&page=1`,
-    ["getsimmiliarMovie"],
+const SimiliarTvShow = ({ id }: { id: string }) => {
+  const { data: similarMovies } = GetData<GetTvShowsResponse>(
+    `/tv/${id}/similar?language=en-US&page=1`,
+    ["getsimmiliartvShow"],
     {
       page: 1,
     },
@@ -27,10 +27,10 @@ const SimiliarMovies = ({ id }: { id: string }) => {
               key={item.id}
               image={`https://image.tmdb.org/t/p/original/${item.poster_path}`}
               rating={item.vote_average}
-              title={item.title}
-              year={item.release_date}
+              title={item.name}
+              year={item.first_air_date}
               category={`${item.genre_ids[0]}`}
-              isNew={checkNew({ date: item.release_date })}
+              isNew={checkNew({ date: item.first_air_date })}
             />
           ))}
       </div>
@@ -38,4 +38,4 @@ const SimiliarMovies = ({ id }: { id: string }) => {
   );
 };
 
-export default SimiliarMovies;
+export default SimiliarTvShow;

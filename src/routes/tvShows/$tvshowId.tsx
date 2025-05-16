@@ -11,9 +11,10 @@ export const Route = createFileRoute("/tvShows/$tvshowId")({
 });
 
 function RouteComponent() {
+  const { id } = Route.useLoaderData();
   return (
     <div>
-      <TvShowDetailPage id={Route.id} />
+      <TvShowDetailPage id={`${id}`} />
     </div>
   );
 }
