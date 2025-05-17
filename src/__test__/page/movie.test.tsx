@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import React from "react";
+
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import MoviePage from "../../src/pages/movie/index"; // Adjust path to your MoviePage component
 import type {
   GetMovieResponse,
   result,
-} from "../../src/interface/movie/GetListMovieResponse"; // Adjust path
+} from "../../interface/movie/GetListMovieResponse";
+import MoviePage from "../../pages/movie";
 
 // --- Mocks ---
 
@@ -36,7 +36,7 @@ jest.mock("../../components/root/Loading", () => ({
   default: jest.fn(() => <div data-testid="loading-component">Loading...</div>),
 }));
 
-// Mock Container component (optional, could let it render if simple)
+// Mock Container component
 jest.mock("../../components/root/Container", () => ({
   __esModule: true,
   default: jest.fn(({ children, className }) => (
@@ -116,16 +116,24 @@ describe("MoviePage Component", () => {
       ...defaultMockData,
       results: createMockMovieResults(1, "Search"),
     },
+    listMovieError = false,
+    nowPlayingError = false,
+    searchMovieError = false,
+    errorMessage = "",
   }: {
     listMovieLoading?: boolean;
     listMovieFetching?: boolean;
-    listMovieData?: GetMovieResponse | undefined; // Allow undefined for initial loading state
+    listMovieData?: GetMovieResponse | undefined;
     nowPlayingLoading?: boolean;
     nowPlayingFetching?: boolean;
     nowPlayingData?: GetMovieResponse;
     searchMovieLoading?: boolean;
     searchMovieFetching?: boolean;
     searchMovieData?: GetMovieResponse;
+    listMovieError?: boolean;
+    nowPlayingError?: boolean;
+    searchMovieError?: boolean;
+    errorMessage?: string;
   }) => {
     mockGetData.mockImplementation(
       (url: string, queryKey: Array<string | number | undefined | unknown>) => {
@@ -135,8 +143,9 @@ describe("MoviePage Component", () => {
             data: listMovieData,
             isLoading: listMovieLoading,
             isFetching: listMovieFetching,
-            isError: false,
-            error: null,
+            isError: listMovieError || false,
+            error: listMovieError ? errorMessage || "List Movie Error" : null,
+            isSuccess: !listMovieError,
           };
         }
         // Differentiate "nowplaying" key by URL since it's used for two different fetches
@@ -147,8 +156,11 @@ describe("MoviePage Component", () => {
               data: nowPlayingData,
               isLoading: nowPlayingLoading, // Corresponds to isLoading in useQuery
               isFetching: nowPlayingFetching, // Corresponds to isFetching in useQuery (fetchNowPlaying in component)
-              isError: false,
-              error: null,
+              isError: nowPlayingError || false,
+              error: nowPlayingError
+                ? errorMessage || "Now Playing Error"
+                : null,
+              isSuccess: !nowPlayingError,
             };
           }
           if (url.startsWith("/search/movie")) {
@@ -157,8 +169,11 @@ describe("MoviePage Component", () => {
               data: searchMovieData,
               isLoading: searchMovieLoading,
               isFetching: searchMovieFetching, // Corresponds to isFetching in useQuery (fetchSearch in component)
-              isError: false,
-              error: null,
+              isError: searchMovieError || false,
+              error: searchMovieError
+                ? errorMessage || "Search Movie Error"
+                : null,
+              isSuccess: !searchMovieError,
             };
           }
         }
@@ -167,7 +182,7 @@ describe("MoviePage Component", () => {
           isLoading: false,
           isFetching: false,
           isError: false,
-          error: null,
+          isSuccess: true,
         };
       }
     );
@@ -347,5 +362,38 @@ describe("MoviePage Component", () => {
       expect(screen.queryByTestId("loading-component")).not.toBeInTheDocument();
     });
     expect(screen.queryAllByTestId(/movie-card-/)).toHaveLength(0);
+  });
+
+  test("renders an error message when listMovie returns an error", () => {
+    setupGetDataMocks({
+      listMovieError: true,
+      errorMessage: "Failed to fetch list movies",
+    });
+    render(<MoviePage {...baseProps} />);
+    expect(screen.getByText("Failed to fetch list movies")).toBeInTheDocument();
+  });
+
+  test("renders an error message when nowPlaying returns an error", () => {
+    setupGetDataMocks({
+      nowPlayingError: true,
+      errorMessage: "Failed to fetch now playing movies",
+    });
+    mockFindMovie.mockReturnValue(true);
+    render(<MoviePage {...baseProps} search="now_playing" />);
+    expect(
+      screen.getByText("Failed to fetch now playing movies")
+    ).toBeInTheDocument();
+  });
+
+  test("renders an error message when searchMovie returns an error", () => {
+    setupGetDataMocks({
+      searchMovieError: true,
+      errorMessage: "Failed to fetch search movies",
+    });
+    mockFindMovie.mockReturnValue(false);
+    render(<MoviePage {...baseProps} search="search_term" />);
+    expect(
+      screen.getByText("Failed to fetch search movies")
+    ).toBeInTheDocument();
   });
 });

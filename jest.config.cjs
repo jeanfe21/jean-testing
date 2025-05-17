@@ -1,6 +1,5 @@
-import type { Config } from "jest";
-
-const config: Config = {
+/** @type {import('jest').Config} */
+const config = {
   // Preset untuk TypeScript
   preset: "ts-jest",
 
@@ -18,6 +17,9 @@ const config: Config = {
     ],
     "^.+\\.jsx?$": "babel-jest",
   },
+  transform: {
+    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+  },
 
   moduleNameMapper: {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
@@ -29,7 +31,7 @@ const config: Config = {
 
   setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
 
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node", "cjs"],
 
   roots: ["<rootDir>/src"],
 
@@ -42,6 +44,7 @@ const config: Config = {
     "/node_modules/",
     "/src/main.tsx", // Contoh
   ],
+  transformIgnorePatterns: ["/node_modules/(?!@tanstack)/"],
 };
 
-export default config;
+module.exports = config;
