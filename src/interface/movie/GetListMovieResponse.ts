@@ -1,5 +1,8 @@
 export interface GetMovieResponse {
+  page: number;
   results: result[];
+  total_pages: number;
+  total_results: number;
 }
 
 export interface result {
